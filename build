@@ -1,0 +1,3 @@
+#!/bin/bash
+toffee -o lib -c src/*.coffee
+toffee -c test/*.coffee
