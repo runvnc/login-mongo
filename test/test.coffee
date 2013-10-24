@@ -5,16 +5,27 @@ mongoConnection = "mongo://localhost:27017/test_login"
 db = new Mongolian mongoConnection
 t = require 'timed'
 fs = require 'fs'
+sinon = require 'sinon'
 
 col = db.collection 'users'
 
-col.remove()
-
 users.config { connect: mongoConnection }
 
-describe 'login-mocha', ->
+col.remove()
+
+describe 'login-mongo', ->
+  describe 'config', ->
+    it 'should extend the config object and create a connection', ->
+      col.remove()
+      assert.equal users.opts.mail.mailer, 'sendmail'
+      users.config { mail: { bodyadd: 'test' } }
+      assert.ok users.opts.mail?
+      assert.equal users.opts.mail.bodyadd, 'test'
+      assert.equal users.opts.mail.mailer, 'sendmail'
+
   describe 'checkExists', ->
     it 'should return true if user with that email exists or false if not', (done) ->
+      col.remove()
       found = users.checkExists! 'bob@home.com'
       assert.equal found, false
       t.reset()
@@ -33,6 +44,34 @@ describe 'login-mocha', ->
       assert.equal user.email, 'bob@home.com'
       done()
 
+  makeFakeSender = ->
+    fakeSender = { sendMail: -> }
+    sendMail = sinon.stub fakeSender, 'sendMail'
+    sendMail.returns { message: '..' }
+    fakeSender 
 
-
+  describe 'add', ->
+    it 'should add a user and send a welcome email based on the config', (done) ->
+      col.remove()
+      fakeSender = makeFakeSender()
+      conf =
+        mail:
+          bodyadd: "{{name}} {{password}}"
+          mailer: fakeSender
+      users.config conf
+      users.add! 'eddie@home.com', 'eddie', 'pass'
+      e, user = col.findOne! { name: 'eddie' }
+      assert.ok user?
+      sendMailArgs = fakeSender.sendMail.getCall(0).args[0]
+      console.log sendMailArgs
+      assert.equal sendMailArgs.text, 'eddie pass'
+      done()
+  
+  describe 'resetPassword', ->
+    it 'resets a users password to a random password and sends an email', ->
+      fakeSender = makeFakeSender()
+      conf = { mail: { bodyreset: "{{name}} {{password}}" } }
+      users.config conf
+      users.resetPassword! 'eddie', 'eddie@home.com'
+             
 

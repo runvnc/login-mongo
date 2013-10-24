@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:ithkuil/login-mocha.git"
+    "url": "git@github.com:ithkuil/login-mongo.git"
   },
   "keywords": [
     "authentication",
@@ -21,16 +21,17 @@
   "author": "Jason Livesay",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/ithkuil/login-mocha/issues"
+    "url": "https://github.com/ithkuil/login-mongo/issues"
   },
   "dependencies": {
-    "underscore": "~1.5.2",
     "mongolian": "~0.1.18",
     "nodemailer": "~0.5.3",
     "randpass": "~0.1.0",
     "password-hash": "~1.2.1",
     "mustache": "~0.7.2",
-    "timed": "~0.1.1"
+    "timed": "~0.1.1",
+    "sinon": "~1.7.3",
+    "lodash": "~2.2.1"
   },
   "devDependencies": {
     "toffee-script": ""

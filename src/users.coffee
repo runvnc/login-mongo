@@ -4,7 +4,7 @@ randpass = require 'randpass'
 fs = require 'fs'
 nodemailer = require 'nodemailer'
 Mongolian = require 'mongolian'
-und = require 'underscore'
+dash = require 'lodash'
 mustache = require 'mustache'
 
 server = null
@@ -17,17 +17,27 @@ opts =
     subjectadd: 'User account created'
     bodyadd: "Username: {{name}} password: {{pass}"
     bodyreset: "Username: {{name}} password: {{pass}}"
+    subjectreset: 'Password reset'
+    mailer: 'sendmail'
+  collection: 'users'
+  sendEmails: true
 
 smtp = nodemailer.createTransport "Sendmail", "/usr/sbin/sendmail"
 
+getMailer = ->
+  if opts.mail?.mailer? isnt 'sendmail'
+    opts.mail.mailer
+  else
+    smtp
+
 config = (options) ->
-  und.extend opts, options
-  if options.connect?
-    db = new Mongolian options.connect
+  dash.merge opts, options
+  if opts.connect?
+    db = new Mongolian opts.connect
   else
     db = new Mongolian 'mongo://localhost:27017/users'
-  if options.collection?
-    users = db.collection options.collection
+  if opts.collection?
+    users = db.collection opts.collection
   else
     users = db.collection 'users'
     
@@ -37,7 +47,6 @@ checkExists = (email, cb) ->
   e, existing = users.findOne! { email: email }
   cb existing?
 
-
 addNoEmail = (email, name, pass, cb) ->
   if not checkExists! email
     users.insert { email, name, passhash: passwordHash.generate pass } 
@@ -45,70 +54,79 @@ addNoEmail = (email, name, pass, cb) ->
   else
     cb?()
 
-add = (email, name, cb) =>
+add = (email, name, pass, cb) =>
   existing = checkExists! email
   if not checkExists! email
-    pass = randpass()
     newuser = { email, name, passhash: passwordHash.generate pass }
     users.insert! newuser    
-    rendered = mustache.render opts.bodyadd, newuser
-    try
-      options =
-        from: opts.from
-        to: email
-        subject: opts.subjectadd
-        text: rendered
-      smtp.sendMail options, (err, res) ->
-        if err?
-          console.log err
-        else
-          console.log 'Message sent: ' + res.message
-    catch e
-      console.log 'Error sending user mail' + e.message
-      console.log e
+    newuser.password = pass
+    rendered = mustache.render opts.mail.bodyadd, newuser
+    if opts.sendEmails
+      try
+        options =
+          from: opts.mail.from
+          to: email
+          subject: opts.mail.subjectadd
+          text: rendered
+        mailer = getMailer()
+        mailer.sendMail options, (err, res) ->
+          if err?
+            console.log err
+          else
+            console.log 'Message sent: ' + res.message
+      catch e
+        console.log 'Error sending user mail' + e.message
+        console.log e
     cb?()
   else
     cb?()
 
 
-resetPassword = (name) =>
+resetPassword = (name, cb) =>
   e, user = users.findOne! { name: name }
   if user?
     pass = randpass()
-    user.passhash = passwordHash.generate pass
-    users.update { name: name }, user
-    rendered = mustache.render opts.bodyreset, user
-    try
-      options =
-        from: opts.from
-        to: users[name].email
-        subject: 'User password reset'
-        text: rendered
-      smtp.sendMail options, (err, res) ->
-        if err?
-          console.log err
-        else
-          console.log 'Message sent: ' + res.message
-    catch e
-      console.log 'Error sending user mail' + e.message
-      console.log e
+    hash = passwordHash.generate pass
+    change = { $set: { passhash: hash } }
+    users.update { name: name }, change
+    rendered = mustache.render opts.mail.bodyreset, user
+    if opts.sendEmails
+      try
+        options =
+          from: opts.mail.from
+          to: user.email
+          subject: opts.mail.subjectreset
+          text: rendered
+        mailer = getMailer()
+        mailer.sendMail options, (err, res) ->
+          if err?
+            console.log err
+          else
+            console.log 'Message sent: ' + res.message
+          cb true
+      catch e
+        console.log 'Error sending user mail' + e.message
+        console.log e
+    cb true
 
 
-updatePassword = (username, oldpass, newpass) =>
-  if not checkPassword(username, oldpass)
-    return false
+updatePassword = (username, oldpass, newpass, cb) =>
+  if not checkPassword! username, oldpass
+    cb false
   else
-    users[username].passhash = passwordHash.generate newpass
-    save()
-    return true
+    hash = passwordHash.generate newpass
+    change = { $set: { passhash: hash } }
+    users.update { name: username }, change
+    cb true
 
 checkPassword = (username, pass, cb) =>
   e, user = users.findOne! { name: username }
   if user?
-    return passwordHash.verify pass, user.passhash
+    cb passwordHash.verify pass, user.passhash
   else
-    return false
+    cb false
 
+exports.opts = opts
 exports.config = config
 exports.add = add
 exports.checkExists = checkExists
@@ -117,6 +135,4 @@ exports.updatePassword = updatePassword
 exports.checkPassword = checkPassword
 exports.addNoEmail = addNoEmail
 exports.users = users
-
-
 
