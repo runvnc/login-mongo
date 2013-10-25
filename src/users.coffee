@@ -15,7 +15,7 @@ opts =
   mail:
     from: 'root'
     subjectadd: 'User account created'
-    bodyadd: "Username: {{name}} password: {{pass}"
+    bodyadd: "Username: {{name}} password: {{pass}}"
     bodyreset: "Username: {{name}} password: {{pass}}"
     subjectreset: 'Password reset'
     mailer: 'sendmail'
