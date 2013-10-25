@@ -57,7 +57,10 @@ addNoEmail = (email, name, pass, cb) ->
 add = (email, name, pass, cb) =>
   existing = checkExists! email
   if not checkExists! email
-    newuser = { email, name, passhash: passwordHash.generate pass }
+    try
+      newuser = { email, name, passhash: passwordHash.generate pass }
+    catch e
+      return cb new Error("Error creating user: #{e.message}"), false
     users.insert! newuser    
     newuser.password = pass
     rendered = mustache.render opts.mail.bodyadd, newuser
@@ -77,9 +80,10 @@ add = (email, name, pass, cb) =>
       catch e
         console.log 'Error sending user mail' + e.message
         console.log e
-    cb true
+        return cb new Error("Error sending user mail: #{e.message}")
+    cb null, true
   else
-    cb false
+    cb null, false
 
 
 resetPassword = (name, cb) =>
