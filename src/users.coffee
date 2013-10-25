@@ -63,7 +63,10 @@ add = (email, name, pass, cb) =>
       return cb new Error("Error creating user: #{e.message}"), false
     users.insert! newuser    
     newuser.password = pass
-    rendered = mustache.render opts.mail.bodyadd, newuser
+    try
+      rendered = mustache.render opts.mail.bodyadd, newuser
+    catch e1
+      return cb new Error("Error rendering email body for new user mail: #{e1.message}"), false
     if opts.sendEmails
       try
         options =
