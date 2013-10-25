@@ -77,9 +77,9 @@ add = (email, name, pass, cb) =>
       catch e
         console.log 'Error sending user mail' + e.message
         console.log e
-    cb?()
+    cb true
   else
-    cb?()
+    cb false
 
 
 resetPassword = (name, cb) =>
