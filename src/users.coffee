@@ -25,7 +25,7 @@ opts =
 smtp = nodemailer.createTransport "Sendmail", "/usr/sbin/sendmail"
 
 getMailer = ->
-  if opts.mail?.mailer? isnt 'sendmail'
+  if opts.mail?.mailer isnt 'sendmail'
     opts.mail.mailer
   else
     smtp
