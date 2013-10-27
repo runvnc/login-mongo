@@ -22,6 +22,11 @@ opts =
   collection: 'users'
   sendEmails: true
 
+popts =
+  algorithm: 'sha256'
+  saltLength: 10
+  iterations: 2
+
 smtp = nodemailer.createTransport "Sendmail", "/usr/sbin/sendmail"
 
 getMailer = ->
@@ -49,7 +54,7 @@ checkExists = (email, cb) ->
 
 addNoEmail = (email, name, pass, cb) ->
   if not checkExists! email
-    users.insert { email, name, passhash: passwordHash.generate pass } 
+    users.insert { email, name, passhash: passwordHash.generate pass, popts } 
     cb?()
   else
     cb?()
@@ -58,7 +63,7 @@ add = (email, name, pass, cb) =>
   existing = checkExists! email
   if not checkExists! email
     try
-      newuser = { email, name, passhash: passwordHash.generate pass }
+      newuser = { email, name, passhash: passwordHash.generate pass, popts }
     catch e
       return cb new Error("Error creating user: #{e.message}"), false
     users.insert! newuser    
@@ -93,7 +98,7 @@ resetPassword = (name, cb) =>
   e, user = users.findOne! { name: name }
   if user?
     pass = randpass()
-    hash = passwordHash.generate pass
+    hash = passwordHash.generate pass, popts
     change = { $set: { passhash: hash } }
     users.update { name: name }, change
     rendered = mustache.render opts.mail.bodyreset, user
@@ -121,7 +126,7 @@ updatePassword = (username, oldpass, newpass, cb) =>
   if not checkPassword! username, oldpass
     cb false
   else
-    hash = passwordHash.generate newpass
+    hash = passwordHash.generate newpass, popts
     change = { $set: { passhash: hash } }
     users.update { name: username }, change
     cb true
