@@ -16,7 +16,7 @@ app.post '/logintry', (req, res) ->
       res.redirect '/login.html'
 
 app.post '/createuser', (req, res) ->
-  users.add! req.body.email, req.body.username, req.body.password, (e, success) ->
+  users.add req.body.email, req.body.username, req.body.password, (e, success) ->
     if not e?
       error = undefined
     else
