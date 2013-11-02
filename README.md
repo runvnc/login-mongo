@@ -3,25 +3,15 @@
 Create users, check password, reset password, with a Mongo backend.
 
 ## Example (Express) creating a user: 
-
 ```javascript
-
 var users;
 
 users = require('users');
 
 app.post('/createuser', function(req, res) {
-  users.add(req.body.email, req.body.username, req.body.password, function(e, success) {
-    var error;
-    if (!(e != null)) {
-      error = void 0;
-    } else {
-      error = {
-        message: e.message
-      };
-    }
+  users.add(req.body.email, req.body.user, req.body.pass, function(err, success) {
     return res.end(JSON.stringify({
-      error: error,
+      error: err,
       success: success
     }));
   });
@@ -31,12 +21,11 @@ app.post('/createuser', function(req, res) {
 By default after adding a user, it will send an email (using sendmail) to the user with their password.  
 
 ## Example of logging in:
-
 ```javascript
 app.post('/logintry', function(req, res) {
-  users.checkPassword(req.body.username, req.body.password, function(success) {
+  users.checkPassword(req.body.user, req.body.pass, function(success) {
     if (success) {
-      req.session.user = req.body.username;
+      req.session.user = req.body.user;
       return res.redirect('/app');
     } else {
       req.session.user = void 0;
@@ -51,9 +40,7 @@ app.post('/logintry', function(req, res) {
 
 ## users.config(options);
 
-You do not *need* to call `users.config`.  If you don't call it, these are the defaults:
-
-var opts;
+You do not *need* to call `users.config()`.  If you don't call it, these are the defaults:
 
 ```javascript
 opts = {
@@ -74,10 +61,7 @@ opts = {
 You can override just a few of the parameters, or all of them.  For example:
 
 ```javascript
-
 users.config({ sendEmails: false, connect: 'mongo://localhost:27017/mydatabase' });
-
-
 ```
 
 sets it up to use `mydatabase` instead of the default `users` database and prevents the emails.
@@ -86,7 +70,7 @@ If you want to use your own `nodemailer` transport for sending mail instead of `
 
 # Methods
 
-##config(options)
+## config(options)
   
 ## checkExists(email, function(err, exists){})
 
