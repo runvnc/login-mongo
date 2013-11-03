@@ -2,6 +2,8 @@
 
 Create users, check password, reset password, with a Mongo backend.
 
+*V 1.0.0 Note*: Now uses `bcrypt` instead of `password-hash` for hashing passwords.  Emails don't include the password now.  `resetPassword` returns the new password which is _temporary_ and should be changed by the user.  The `randpass` module I used in `resetPassword` uses Math.random(), which although every other random password module I found does the same thing, apparently is not really random enough since it doesn't use anything like `crypto.randomBytes`.  So just use the reset password as a temporary and have them change it.
+
 ## Example (Express) creating a user: 
 ```javascript
 var users;
@@ -48,8 +50,8 @@ opts = {
   mail: {
     from: 'root',
     subjectadd: 'User account created',
-    bodyadd: "Username: {{name}} password: {{password}}",
-    bodyreset: "Username: {{name}} password: {{password}}",
+    bodyadd: "Username: {{name}}",
+    bodyreset: "Username: {{name}}",
     subjectreset: 'Password reset',
     mailer: 'sendmail'
   },

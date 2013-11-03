@@ -1,5 +1,5 @@
 #This is actually ToffeeScript
-passwordHash = require 'password-hash'
+bcrypt = require 'bcrypt'
 randpass = require 'randpass'
 fs = require 'fs'
 nodemailer = require 'nodemailer'
@@ -15,8 +15,8 @@ opts =
   mail:
     from: 'root'
     subjectadd: 'User account created'
-    bodyadd: "Username: {{name}} password: {{password}}"
-    bodyreset: "Username: {{name}} password: {{password}}"
+    bodyadd: "Username: {{name}}"
+    bodyreset: "Username: {{name}}"
     subjectreset: 'Password reset'
     mailer: 'sendmail'
   collection: 'users'
@@ -54,7 +54,8 @@ checkExists = (email, cb) ->
 
 addNoEmail = (email, name, pass, cb) ->
   if not checkExists! email
-    users.insert { email, name, passhash: passwordHash.generate pass, popts } 
+    err, hash = bcrypt.hash! pass, 8
+    users.insert! { email, name, passhash: hash }
     cb?()
   else
     cb?()
@@ -63,44 +64,48 @@ add = (email, name, pass, cb) =>
   existing = checkExists! email
   if not checkExists! email
     try
-      newuser = { email, name, passhash: passwordHash.generate pass, popts }
-    catch e
-      return cb new Error("Error creating user: #{e.message}"), false
-    users.insert! newuser    
-    newuser.password = pass
-    try
-      rendered = mustache.render opts.mail.bodyadd, newuser
-    catch e1
-      return cb new Error("Error rendering email body for new user mail: #{e1.message}"), false
-    if opts.sendEmails
+      err, hash = bcrypt.hash! pass, 8
+      newuser = { email, name, passhash: hash }
+      e2, val = users.insert! newuser
+      newuser.password = pass
       try
-        options =
-          from: opts.mail.from
-          to: email
-          subject: opts.mail.subjectadd
-          text: rendered
-        mailer = getMailer()
-        mailer.sendMail options, (err, res) ->
-          if err?
-            console.log err
-          else
-            console.log 'Message sent: ' + res.message
-      catch e
-        console.log 'Error sending user mail' + e.message
-        console.log e
-        return cb new Error("Error sending user mail: #{e.message}")
-    cb null, true
+        rendered = mustache.render opts.mail.bodyadd, newuser
+      catch e1
+        return cb new Error("Error rendering email body for new user mail: #{e1.message}"), false
+      if opts.sendEmails
+        try
+          options =
+            from: opts.mail.from
+            to: email
+            subject: opts.mail.subjectadd
+            text: rendered
+          mailer = getMailer()
+          mailer.sendMail options, (err, res) ->
+            if err?
+              console.log err
+            else
+              console.log 'Message sent: ' + res.message
+        catch e
+          console.log 'Error sending user mail' + e.message
+          console.log e
+          return cb new Error("Error sending user mail: #{e.message}")
+      cb null, true
+    catch e
+      console.log 'There was an error'
+      console.log e
+      return cb new Error("Error creating user: #{e.message}"), false
+
   else
     cb null, false
-
+  null
 
 resetPassword = (name, cb) =>
   e, user = users.findOne! { name: name }
   if user?
     pass = randpass()
-    hash = passwordHash.generate pass, popts
+    err, hash = bcrypt.hash! pass, 8
     change = { $set: { passhash: hash } }
-    users.update { name: name }, change
+    users.update! { name: name }, change
     rendered = mustache.render opts.mail.bodyreset, user
     if opts.sendEmails
       try
@@ -115,18 +120,19 @@ resetPassword = (name, cb) =>
             console.log err
           else
             console.log 'Message sent: ' + res.message
-          cb true
+          cb pass
       catch e
         console.log 'Error sending user mail' + e.message
         console.log e
-    cb true
+    cb pass
+  null
 
 
 updatePassword = (username, oldpass, newpass, cb) =>
   if not checkPassword! username, oldpass
     cb false
   else
-    hash = passwordHash.generate newpass, popts
+    err, hash = bcrypt.hash! pass, 8
     change = { $set: { passhash: hash } }
     users.update { name: username }, change
     cb true
@@ -134,7 +140,8 @@ updatePassword = (username, oldpass, newpass, cb) =>
 checkPassword = (username, pass, cb) =>
   e, user = users.findOne! { name: username }
   if user?
-    cb passwordHash.verify pass, user.passhash
+    er, res = bcrypt.compare! pass, user.passhash
+    cb res
   else
     cb false
 

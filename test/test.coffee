@@ -56,22 +56,23 @@ describe 'login-mongo', ->
       fakeSender = makeFakeSender()
       conf =
         mail:
-          bodyadd: "{{name}} {{password}}"
+          bodyadd: "{{name}}"
           mailer: fakeSender
       users.config conf
-      users.add! 'eddie@home.com', 'eddie', 'pass'
+      e, ret = users.add! 'eddie@home.com', 'eddie', 'pass'
       e, user = col.findOne! { name: 'eddie' }
       assert.ok user?
       sendMailArgs = fakeSender.sendMail.getCall(0).args[0]
-      console.log sendMailArgs
-      assert.equal sendMailArgs.text, 'eddie pass'
+
+      assert.equal sendMailArgs.text, 'eddie'
       done()
   
   describe 'resetPassword', ->
-    it 'resets a users password to a random password and sends an email', ->
+    it 'resets a users password to a random password and sends an email', (done) ->
       fakeSender = makeFakeSender()
-      conf = { mail: { bodyreset: "{{name}} {{password}}" } }
+      conf = { mail: { bodyreset: "{{name}}" } }
       users.config conf
-      users.resetPassword! 'eddie', 'eddie@home.com'
-             
+      tempPass = users.resetPassword! 'eddie'
+      done()
+
 

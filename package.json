@@ -1,6 +1,6 @@
 {
   "name": "login-mongo",
-  "version": "0.1.7",
+  "version": "1.0.0",
   "description": "Simple authentication/users back-end using MongoDB",
   "main": "lib/users.js",
   "scripts": {
@@ -27,7 +27,7 @@
     "mongolian": "~0.1.18",
     "nodemailer": "~0.5.3",
     "randpass": "~0.1.0",
-    "password-hash": "~1.2.1",
+    "bcrypt":"",
     "mustache": "~0.7.2",
     "timed": "~0.1.1",
     "sinon": "~1.7.3",
