@@ -20,7 +20,7 @@ app.post('/createuser', function(req, res) {
 });
 ```
 
-By default after adding a user, it will send an email (using sendmail) to the user with their password.  
+By default after adding a user, it will send an email (using sendmail) to the user.
 
 ## Example of logging in:
 ```javascript
