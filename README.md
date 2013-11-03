@@ -80,7 +80,7 @@ If you want to use your own `nodemailer` transport for sending mail instead of `
 
 ## add(email, name, pass, function(err, success){})
 
-## resetPassword(name, function(success){})
+## resetPassword(name, function(tempPass){})
 
 ## updatePassword(username, oldpass, newpass, function(success){})
 
