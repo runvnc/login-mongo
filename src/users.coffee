@@ -127,7 +127,7 @@ updatePassword = (username, oldpass, newpass, cb) =>
   if not checkPassword! username, oldpass
     cb false
   else
-    err, hash = bcrypt.hash! pass, 8
+    err, hash = bcrypt.hash! newpass, 8
     change = { $set: { passhash: hash } }
     users.update { name: username }, change
     cb true
