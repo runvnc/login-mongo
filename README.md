@@ -47,6 +47,7 @@ You do not *need* to call `users.config()`.  If you don't call it, these are the
 ```javascript
 opts = {
   connect: 'mongo://localhost:27017/users',
+  iterations: 10,  //number of rounds used in generating salt
   mail: {
     from: 'root',
     subjectadd: 'User account created',

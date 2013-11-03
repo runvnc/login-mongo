@@ -120,7 +120,7 @@
         });
       });
     });
-    return describe('resetPassword', function() {
+    describe('resetPassword', function() {
       return it('resets a users password to a random password and sends an email', function(done) {
         var conf, fakeSender, tempPass,
           _this = this;
@@ -134,6 +134,23 @@
         users.resetPassword('eddie', function() {
           tempPass = arguments[0];
           return done();
+        });
+      });
+    });
+    return describe('checkPassword', function() {
+      return it('checks for a valid password in constant time', function(done) {
+        var stillValid, valid,
+          _this = this;
+        users.add('guy@place.io', 'guy', 'pass', function() {
+          users.checkPassword('guy', 'pass', function() {
+            valid = arguments[0];
+            assert.ok(valid);
+            users.checkPassword('guy', 'badpass', function() {
+              stillValid = arguments[0];
+              assert.equal(false, stillValid);
+              return done();
+            });
+          });
         });
       });
     });

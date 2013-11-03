@@ -7,11 +7,14 @@ Mongolian = require 'mongolian'
 dash = require 'lodash'
 mustache = require 'mustache'
 
+delay = (ms, func) -> setTimeout func, ms
+
 server = null
 db = null
 users = null
 
 opts =
+  iterations: 10
   mail:
     from: 'root'
     subjectadd: 'User account created'
@@ -49,7 +52,7 @@ checkExists = (email, cb) ->
 
 addNoEmail = (email, name, pass, cb) ->
   if not checkExists! email
-    err, hash = bcrypt.hash! pass, 8
+    err, hash = bcrypt.hash! pass, opts.iterations
     users.insert! { email, name, passhash: hash }
     cb?()
   else
@@ -59,7 +62,7 @@ add = (email, name, pass, cb) =>
   existing = checkExists! email
   if not checkExists! email
     try
-      err, hash = bcrypt.hash! pass, 8
+      err, hash = bcrypt.hash! pass, opts.iterations
       newuser = { email, name, passhash: hash }
       e2, val = users.insert! newuser
       newuser.password = pass
@@ -98,7 +101,7 @@ resetPassword = (name, cb) =>
   e, user = users.findOne! { name: name }
   if user?
     pass = randpass()
-    err, hash = bcrypt.hash! pass, 8
+    err, hash = bcrypt.hash! pass, opts.iterations
     change = { $set: { passhash: hash } }
     users.update! { name: name }, change
     rendered = mustache.render opts.mail.bodyreset, user
@@ -127,18 +130,21 @@ updatePassword = (username, oldpass, newpass, cb) =>
   if not checkPassword! username, oldpass
     cb false
   else
-    err, hash = bcrypt.hash! newpass, 8
+    err, hash = bcrypt.hash! newpass, opts.iterations
     change = { $set: { passhash: hash } }
     users.update { name: username }, change
     cb true
 
 checkPassword = (username, pass, cb) =>
+  e = null
+  er = null
+  res = false
+  delay 500, -> if e? then cb false else cb res
   e, user = users.findOne! { name: username }
-  if user?
+  if not e? and user?
     er, res = bcrypt.compare! pass, user.passhash
-    cb res
   else
-    cb false
+    res = false
 
 exports.opts = opts
 exports.config = config

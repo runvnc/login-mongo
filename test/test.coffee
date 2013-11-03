@@ -75,4 +75,13 @@ describe 'login-mongo', ->
       tempPass = users.resetPassword! 'eddie'
       done()
 
+  describe 'checkPassword', ->
+    it 'checks for a valid password in constant time', (done) ->
+      users.add! 'guy@place.io', 'guy', 'pass'
+      valid = users.checkPassword! 'guy', 'pass'
+      assert.ok valid
+      stillValid = users.checkPassword! 'guy', 'badpass'
+      assert.equal false, stillValid
+      done()
+
 
