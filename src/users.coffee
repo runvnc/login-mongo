@@ -139,7 +139,7 @@ checkPassword = (username, pass, cb) =>
   e = null
   er = null
   res = false
-  delay 500, -> if e? then cb false else cb res
+  delay 700, -> if e? then cb false else cb res
   e, user = users.findOne! { name: username }
   if not e? and user?
     er, res = bcrypt.compare! pass, user.passhash
