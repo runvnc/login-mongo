@@ -22,11 +22,6 @@ opts =
   collection: 'users'
   sendEmails: true
 
-popts =
-  algorithm: 'sha256'
-  saltLength: 10
-  iterations: 2
-
 smtp = nodemailer.createTransport "Sendmail", "/usr/sbin/sendmail"
 
 getMailer = ->
