@@ -2,13 +2,11 @@
 
 Create users, check password, reset password, with a Mongo backend.
 
-*V 1.0.0 Note*: Now uses `bcrypt` instead of `password-hash` for hashing passwords.  Emails don't include the password now.  `resetPassword` returns the new password which is _temporary_ and should be changed by the user.  The `randpass` module I used in `resetPassword` uses Math.random(), which although every other random password module I found does the same thing, apparently is not really random enough since it doesn't use anything like `crypto.randomBytes`.  So just use the reset password as a temporary and have them change it.
+Note: `resetPassword` returns the new password which is _temporary_ and should be changed by the user.
 
 ## Example (Express) creating a user: 
 ```javascript
-var users;
-
-users = require('users');
+var users = require('login-mongo');
 
 app.post('/createuser', function(req, res) {
   users.add(req.body.email, req.body.user, req.body.pass, function(err, success) {
