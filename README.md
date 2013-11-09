@@ -1,12 +1,13 @@
 # login-mongo
-
 Create users, check password, reset password, with a Mongo backend.
+
+`npm install login-mongo`
 
 Note: `resetPassword` returns the new password which is _temporary_ and should be changed by the user.
 
 ## Example (Express) creating a user: 
 ```javascript
-var users = require('login-mongo');
+var users = require('login-mongo'); # I like to just refer to it as 'users'
 
 app.post('/createuser', function(req, res) {
   users.add(req.body.email, req.body.user, req.body.pass, function(err, success) {
