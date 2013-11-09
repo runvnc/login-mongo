@@ -38,7 +38,7 @@ app.post('/logintry', function(req, res) {
 
 # Configuration
 
-## users.config(options);
+## config(options);
 
 You do not *need* to call `users.config()`.  If you don't call it, these are the defaults:
 
