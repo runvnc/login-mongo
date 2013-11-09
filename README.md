@@ -1,5 +1,5 @@
 # login-mongo
-Create users, check password, reset password, with a Mongo backend.
+A MongoDB back-end for creating users, checking passwords, updating passwords, and reseting passwords.  Optionally sends emails with templates you can specify.
 
 `npm install login-mongo`
 
