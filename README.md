@@ -1,3 +1,5 @@
+[Tiny Villages: Horizontally Scaling Society](http://runvnc.github.io/tinyvillage)
+
 # login-mongo
 
 A MongoDB back-end for creating users, checking passwords, updating passwords, and resetting passwords.  Optionally sends emails with templates you can specify.
