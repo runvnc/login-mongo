@@ -25,7 +25,7 @@
   },
   "dependencies": {
     "mongolian": "~0.1.18",
-    "nodemailer": "~0.5.3",
+    "nodemailer": "~6.2.1",
     "randpass": "~0.1.0",
     "bcrypt":"",
     "mustache": "~0.7.2",
