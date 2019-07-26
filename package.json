@@ -27,7 +27,7 @@
     "mongolian": "~0.1.18",
     "nodemailer": "~6.3.0",
     "randpass": "~0.1.0",
-    "bcrypt":"",
+    "bcrypt": "",
     "mustache": "~3.0.1",
     "timed": "~0.1.1",
     "sinon": "~7.3.2",

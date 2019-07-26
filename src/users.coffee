@@ -25,7 +25,12 @@ opts =
   collection: 'users'
   sendEmails: true
 
-smtp = nodemailer.createTransport "Sendmail", "/usr/sbin/sendmail"
+transp =
+  sendmail: true
+  newline: 'unix'
+  path: '/usr/sbin/sendmail'
+
+smtp = nodemailer.createTransport transp
 
 getMailer = ->
   if opts.mail?.mailer isnt 'sendmail'
