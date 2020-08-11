@@ -30,7 +30,7 @@
     "bcrypt": "",
     "mustache": "~3.0.1",
     "timed": "~0.1.1",
-    "sinon": "~7.3.2",
+    "sinon": "~9.0.3",
     "lodash": "~4.17.15"
   },
   "devDependencies": {
