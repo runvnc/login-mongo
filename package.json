@@ -28,7 +28,7 @@
     "nodemailer": "~6.3.0",
     "randpass": "~0.1.0",
     "bcrypt": "",
-    "mustache": "~3.0.1",
+    "mustache": "~4.1.0",
     "timed": "~0.1.1",
     "sinon": "~7.3.2",
     "lodash": "~4.17.15"
