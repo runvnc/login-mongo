@@ -24,14 +24,14 @@
     "url": "https://github.com/ithkuil/login-mongo/issues"
   },
   "dependencies": {
-    "mongolian": "~0.1.18",
-    "nodemailer": "~6.3.0",
-    "randpass": "~0.1.0",
     "bcrypt": "",
+    "lodash": "~4.17.15",
+    "mongolian": "~0.1.18",
     "mustache": "~3.0.1",
-    "timed": "~0.1.1",
+    "nodemailer": "^6.6.3",
+    "randpass": "~0.1.0",
     "sinon": "~7.3.2",
-    "lodash": "~4.17.15"
+    "timed": "~0.1.1"
   },
   "devDependencies": {
     "toffee-script": ""
