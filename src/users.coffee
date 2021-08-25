@@ -123,7 +123,7 @@ resetPassword = (name, cb) =>
             console.log err
           else
             console.log 'Message sent: ' + res.message
-          cb pass
+          #cb pass
       catch e
         console.log 'Error sending user mail' + e.message
         console.log e
