@@ -1,6 +1,6 @@
 {
   "name": "login-mongo",
-  "version": "5.0.0",
+  "version": "6.0.0",
   "description": "Simple authentication/users back-end using MongoDB",
   "main": "lib/users.js",
   "scripts": {
