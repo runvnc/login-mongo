@@ -85,6 +85,10 @@ If you want to use your own `nodemailer` transport for sending mail instead of `
 
 Note: `resetPassword` returns the new password which is _temporary_ and should be changed by the user.
 
+## resetNoEmail(name, function(tempPass){})
+
+Note: `resetPassword` returns the new password which is _temporary_ and should be changed by the user.
+
 ## updatePassword(username, oldpass, newpass, function(success){})
 
 ## checkPassword(username, pass, function(success){})

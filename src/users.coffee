@@ -130,6 +130,17 @@ resetPassword = (name, cb) =>
     cb pass
   null
 
+resetNoEmail = (name, cb) =>
+  e, user = users.findOne! { name: name }
+  if user?
+    pass = randpass()
+    err, hash = bcrypt.hash! pass, opts.iterations
+    change = { $set: { passhash: hash } }
+    users.update! { name: name }, change
+    rendered = mustache.render opts.mail.bodyreset, user
+    cb pass
+  null
+
 
 updatePassword = (username, oldpass, newpass, cb) =>
   if not checkPassword! username, oldpass
