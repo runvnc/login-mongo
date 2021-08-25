@@ -167,6 +167,7 @@ exports.config = config
 exports.add = add
 exports.checkExists = checkExists
 exports.resetPassword = resetPassword
+exports.resetNoEmail = resetNoEmail
 exports.updatePassword = updatePassword
 exports.checkPassword = checkPassword
 exports.addNoEmail = addNoEmail
